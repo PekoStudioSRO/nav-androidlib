@@ -1,3 +1,4 @@
+include ':api'
 rootProject.name='Nav'
 include ':nav'
 include ':navexample'

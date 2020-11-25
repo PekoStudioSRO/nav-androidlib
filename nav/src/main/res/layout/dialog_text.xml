@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:paddingTop="16dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        tools:text="Registration confirm"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="24sp"
+        android:id="@+id/title"
+        android:text="Title"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        tools:text="Your registration was successfull, link to activate your profile was sent to your e-mail. "
+        android:id="@+id/text"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="16sp"
+        android:text="text"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content" />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_marginEnd="2dp"
+        android:id="@+id/ok"
+        android:textAllCaps="true"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+        android:text="Ok"
+        android:layout_gravity="end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

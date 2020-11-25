@@ -1,23 +1,22 @@
 package cz.pekostudio.navexample
 
-import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import cz.pekostudio.nav.elements.BaseActivity
-import cz.pekostudio.nav.Navigation
+import androidx.core.net.toUri
+import cz.pekostudio.NavConfigData
 import cz.pekostudio.nav.elements.BaseFragment
 
 class ImageFragment : BaseFragment(R.layout.fragment_image) {
 
     init {
-        Navigation.config.fileProvider = "cz.pekostudio.navexample.fileprovider"
+        NavConfigData.navigation.fileProvider = "cz.pekostudio.navexample.fileprovider"
     }
 
     override fun onCreate() {
 
         findViewById<View>(R.id.select).setOnClickListener {
-            pickImage {
-                findViewById<ImageView>(R.id.image).setImageBitmap(it)
+            pickImageFile {
+                findViewById<ImageView>(R.id.image).setImageURI(it.toUri())
             }
         }
     }

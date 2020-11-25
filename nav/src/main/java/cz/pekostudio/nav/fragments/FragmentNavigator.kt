@@ -1,19 +1,24 @@
 package cz.pekostudio.nav.fragments
 
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentManager
-import cz.pekostudio.datetimepickers.R
+import cz.pekostudio.nav.R
 import cz.pekostudio.nav.elements.BaseFragment
 import java.util.*
+import kotlin.reflect.KClass
 
 /**
  * Created by Lukas Urbanek on 07/05/2020.
  */
-class FragmentNavigator(private val fragmentManager: FragmentManager, private val container: Int) {
+class FragmentNavigator(
+    private val fragmentManager: FragmentManager,
+    private val container: Int
+) {
 
     private var actualFragment: BaseFragment? = null
-    private val history = Stack<Class<out BaseFragment>>()
+    private val history = Stack<KClass<out BaseFragment>>()
 
-    fun show(fragmentClass: Class<out BaseFragment>, back: Boolean = false): BaseFragment? {
+    fun show(fragmentClass: KClass<out BaseFragment>, back: Boolean = false): BaseFragment? {
         addHistoryEntry(fragmentClass, back)
 
         fragmentClass.instanceOfClass()?.let { fragment ->
@@ -27,13 +32,14 @@ class FragmentNavigator(private val fragmentManager: FragmentManager, private va
 
                 fragmentToShow?.let {
                     show(fragmentToShow)
+                    commit()
+                    fragment.onNavigated()
                 } ?: run {
                     add(container, fragment, fragmentClass.simpleName)
+                    commit()
                 }
-
-                commit()
             }
-            fragment.onNavigated()
+            fragment.parentFragmentNavigator = this
             actualFragment = fragment
             return fragment
         }
@@ -41,23 +47,23 @@ class FragmentNavigator(private val fragmentManager: FragmentManager, private va
         return null
     }
 
-    private fun addHistoryEntry(fragmentClass: Class<out BaseFragment>,  back: Boolean) {
+    private fun addHistoryEntry(fragmentClass: KClass<out BaseFragment>,  back: Boolean) {
         if (!back && actualFragment != null) {
-            ArrayList<Class<out BaseFragment>>().run {
+            ArrayList<KClass<out BaseFragment>>().run {
                 history.forEach {
                     if (it.simpleName == fragmentClass.simpleName) add(it)
                 }
                 history.removeAll(this)
             }
             actualFragment?.let {
-                history.push(it::class.java)
+                history.push(it::class)
             }
         }
     }
 
-    private fun Class<out BaseFragment>.instanceOfClass(): BaseFragment? {
+    private fun KClass<out BaseFragment>.instanceOfClass(): BaseFragment? {
         return try {
-            newInstance()
+            java.newInstance()
         } catch (e: Exception) {
             e.printStackTrace()
             null
