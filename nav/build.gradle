@@ -9,8 +9,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 47
-        versionName "0.7.4"
+        versionCode 48
+        versionName "0.7.5"
     }
 
     buildTypes {
@@ -47,10 +47,11 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.1'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9'
-    implementation 'cz.pekostudio.libs:objectsaver:1.1.1'
     implementation 'com.novoda:merlin:1.2.0'
 
     /** Peko */
     implementation 'cz.pekostudio.libs:uiutils:1.5.2'
     implementation 'cz.pekostudio.libs:camera:1.1.5'
+    implementation 'cz.pekostudio.libs:objectsaver:1.1.1'
+
 }
