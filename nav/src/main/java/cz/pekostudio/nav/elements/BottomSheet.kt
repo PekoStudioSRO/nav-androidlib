@@ -78,5 +78,4 @@ abstract class BottomSheet(@LayoutRes val layout: Int) : BottomSheetDialogFragme
     override fun hideLoading() {
         throw IllegalStateException("hideLoading not available in BottomSheet")
     }
-
 }
