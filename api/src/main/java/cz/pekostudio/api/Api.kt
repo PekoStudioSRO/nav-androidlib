@@ -36,6 +36,7 @@ inline fun <reified T : Any> api(
 ): T {
     val httpClient = OkHttpClient.Builder()
         .configTimeouts()
+        .configInterceptors()
         .addNetworkInterceptor(StethoInterceptor()).apply {
             if (auth) {
                 addInterceptor { chain ->
@@ -60,24 +61,6 @@ inline fun <reified T : Any> api(
         .create(T::class.java)
 }
 
-fun OkHttpClient.Builder.configTimeouts(): OkHttpClient.Builder {
-    ApiConfigData.api.run {
-        readTimeoutInSeconds?.let {
-            readTimeout(it, TimeUnit.SECONDS)
-        }
-        callTimeoutInSeconds?.let {
-            callTimeout(it, TimeUnit.SECONDS)
-        }
-        connectTimeoutInSeconds?.let {
-            connectTimeout(it, TimeUnit.SECONDS)
-        }
-        writeTimeoutInSeconds?.let {
-            writeTimeout(it, TimeUnit.SECONDS)
-        }
-    }
-    return this
-}
-
 inline fun <reified T : Any> api(
     auth: Boolean = true,
     baseUrl: String = ApiConfigData.api.baseUrl,
@@ -94,6 +77,7 @@ inline fun <reified T : Any> api(
 ): T {
     val httpClient = OkHttpClient.Builder()
         .configTimeouts()
+        .configInterceptors()
         .addNetworkInterceptor(StethoInterceptor()).apply {
             if (authToken != null) {
                 addInterceptor { chain ->
@@ -168,6 +152,48 @@ fun <T> Call<T>.get(): CallResponse<T>? {
 }
 
 fun defaultGson(): Gson = GsonBuilder().setLenient().registerTypeAdapters().create()
+
+fun OkHttpClient.Builder.configTimeouts(): OkHttpClient.Builder {
+    ApiConfigData.api.run {
+        readTimeoutInSeconds?.let {
+            readTimeout(it, TimeUnit.SECONDS)
+        }
+        callTimeoutInSeconds?.let {
+            callTimeout(it, TimeUnit.SECONDS)
+        }
+        connectTimeoutInSeconds?.let {
+            connectTimeout(it, TimeUnit.SECONDS)
+        }
+        writeTimeoutInSeconds?.let {
+            writeTimeout(it, TimeUnit.SECONDS)
+        }
+    }
+    return this
+}
+
+fun OkHttpClient.Builder.configInterceptors(): OkHttpClient.Builder {
+    ApiConfigData.api.networkInterceptors.forEach {
+        addNetworkInterceptor(it)
+    }
+    ApiConfigData.api.interceptors.forEach {
+        addInterceptor(it)
+    }
+    ApiConfigData.api.headerInterceptors.forEach {
+        addInterceptor { chain ->
+            val newRequest =
+                chain.request().newBuilder().apply {
+                    it.onCreateHeaders().forEach { (name, value) ->
+                        addHeader(
+                            name,
+                            value
+                        )
+                    }
+                }.build()
+            chain.proceed(newRequest)
+        }
+    }
+    return this
+}
 
 //todo responseOnUiThread = true
 public class CallResponse<T>(private val response: Response<T>?, private val call: Call<T>) {
@@ -259,6 +285,7 @@ object Api {
         override var refreshToken: String? = null
     }
 
+    //todo spíše přemístit do ApiConfigData
     val serializers = HashMap<Class<*>, JsonSerializer<*>>()
     val deserializers = HashMap<Class<*>, JsonDeserializer<*>>()
     val converterFactories = ArrayList<Converter.Factory>()
